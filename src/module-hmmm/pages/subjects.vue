@@ -22,7 +22,7 @@
           </template>
         </el-alert>
       </div>
-      <template>
+  <template>
       <el-table
       :data="items"
       style="width: 100%">
@@ -47,7 +47,7 @@
       <el-table-column
         label="前台是否显示">
         <template slot-scope="{row}">
-        {{row.totals === 1 ? '是' : '否 '}}
+          {{row.totals === 1 ? '是' : '否 '}}
         </template>
       </el-table-column>
       <el-table-column
