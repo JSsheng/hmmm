@@ -22,7 +22,7 @@
           </template>
         </el-alert>
       </div>
-      <template>
+  <template>
       <el-table
       :data="items"
       style="width: 100%">
@@ -45,10 +45,9 @@
         label="创建日期">
       </el-table-column>
       <el-table-column
-        prop="isFrontDisplay === 1 ? '是' : '否'"
         label="前台是否显示">
         <template slot-scope="{row}">
-        {{row.totals === 1 ? '是' : '否 '}}
+          {{row.totals === 1 ? '是' : '否 '}}
         </template>
       </el-table-column>
       <el-table-column
@@ -67,10 +66,10 @@
         label="操作"
         width="280">
         <template>
-          <span class="i">学科分类</span>
-          <span class="i">学科标签</span>
-          <span class="i">修改</span>
-          <span class="i">删除</span>
+          <el-button type="primary">学科分类</el-button>
+          <el-button type="primary">学科标签</el-button>
+          <el-button type="primary">修改</el-button >
+          <el-button type="primary">删除</el-button >
         </template>
       </el-table-column>
     </el-table>
@@ -137,11 +136,6 @@ export default {
       width: 140px;
     }
   }
-    }
-
-    .i{
-      color: #66b1ff;
-      margin-right: 10px;
     }
   }
 }
