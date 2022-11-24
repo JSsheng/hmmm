@@ -1,2 +1,6 @@
-> 1%
-last 2 versions
+# github
+Host github.com
+HostName github.com
+PreferredAuthentications publickey
+IdentityFile ~/.ssh/id_rsa
+Port 22
