@@ -4,10 +4,10 @@
       <div class="Subject-title">
         <div class="title-left">
           <span class="iop">学科名称</span>
-          <el-input class="left_input1"  v-model.trim="left_input" ></el-input>
+          <el-input class="left_input1"  v-model.trim="query.directoryName" ></el-input>
           <span class="iop">状态</span>
           <template>
-           <el-select class="left_input" v-model="Statevalue" placeholder="请选择">
+           <el-select class="left_input" v-model="query.state" placeholder="请选择">
              <el-option
                v-for="item in state"
                :key="item.value"
@@ -16,11 +16,11 @@
              </el-option>
            </el-select>
           </template>
-          <el-button>清除</el-button>
-          <el-button type="primary">搜索</el-button>
+          <el-button @click="DeleatInput">清除</el-button>
+          <el-button @click="SearchList" type="primary">搜索</el-button>
         </div>
         <div class="title-right">
-          <el-button type="success" icon="el-icon-edit" class="button_2" >新增学科</el-button>
+          <el-button @click="dialogVisible = true" type="success" icon="el-icon-edit" class="button_2" >新增目录</el-button>
         </div>
       </div>
       <div class="message" >
@@ -33,7 +33,7 @@
           </template>
         </el-alert>
       </div>
-      <template>
+  <template>
     <el-table
       :data="tableData"
       style="width: 100%">
@@ -56,8 +56,10 @@
         label="创建者">
       </el-table-column>
       <el-table-column
-        prop="addDate"
         label="创建日期">
+        <template slot-scope="{row}">
+          {{ $dayjs(row.addDate).format('YYYY-MM-DD  HH:mm:ss')  }}
+        </template>
       </el-table-column>
       <el-table-column
         prop="totals"
@@ -72,32 +74,75 @@
       <el-table-column
         label="操作">
         <template>
-          <span class="i">禁用</span>
-          <span class="i">修改</span>
-          <span class="i">删除</span>
+          <el-button>禁用</el-button>
+          <el-button>修改</el-button>
+          <el-button>删除</el-button>
         </template>
       </el-table-column>
     </el-table>
   </template>
+  <div class="block">
+    <!-- @size-change="handleSizeChange"
+    @current-change="handleCurrentChange" -->
+    <el-pagination
+      @size-change="handleSiz"
+      @current-change="Currentchange"
+      :page-size="query.pagesize"
+      :page-sizes="[5, 10, 20, 50]"
+      layout="prev, pager,next,sizes,total, jumper"
+      :total="table">
+    </el-pagination>
+  </div>
+<el-dialog
+  title="新增目录"
+  :visible.sync="dialogVisible"
+  width="30%"
+  >
+<template>
+  <span class="btn">所属学科</span>
+  <el-select v-model="subjectName" placeholder="请选择">
+    <el-option
+      v-for="item in lists"
+      :key="item.value"
+      :label="item.label"
+      :value="item.value">
+    </el-option>
+  </el-select>
+  <br>
+  <br>
+  <div>
+   <span class="op">*</span>
+  <span class="btn">目录名称</span>
+  <el-input style="width:60%" v-model="mulumingcehng" placeholder="请输入内容"></el-input>
+ </div>
+ </template>
+  <span slot="footer" class="dialog-footer">
+    <el-button @click="dialogVisible = false">取 消</el-button>
+    <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+  </span>
+</el-dialog>
     </div>
   </div>
 </template>
 
 <script>
-import { list } from '../../api/hmmm/directorys'
+import dayjs from 'dayjs'
+import { list, simple } from '../../api/hmmm/directorys'
 export default {
   data () {
     return {
+      mulumingcehng: '',
+      dialogVisible: false,
       tableData: [],
-      table: '',
+      table: 1,
       Statevalue: '',
       left_input: '',
       state: [
         {
-          value: '选项1',
+          value: 1,
           label: '启用'
         }, {
-          value: '选项2',
+          value: 0,
           label: '禁用'
         }
       ],
@@ -106,12 +151,16 @@ export default {
         pagesize: 10,
         subjectID: '',
         directoryName: '',
-        state: ''
-      }
+        state: null
+      },
+      subjectName: '',
+      lists: []
     }
   },
   created () {
     this.Subjectstate()
+    dayjs()
+    this.sjiandanList()
   },
   methods: {
     async Subjectstate () {
@@ -122,6 +171,27 @@ export default {
       const { data } = await list(search)
       this.tableData = data.items
       this.table = data.counts
+      // console.log(data)
+    },
+    handleSiz (val) {
+      this.query.page = 1
+      this.query.pagesize = val
+      this.Subjectstate()
+    },
+    Currentchange (val) {
+      this.query.page = val
+      this.Subjectstate()
+    },
+    DeleatInput () {
+      this.query.directoryName = ''
+      this.query.state = ''
+    },
+    SearchList () {
+      this.Subjectstate()
+    },
+    async sjiandanList () {
+      const { data } = await simple(this.subjectName)
+      this.lists = data
       // console.log(data)
     }
   }
@@ -137,6 +207,14 @@ export default {
     width: 100%;
     padding: 15px;
 
+    .op{
+      color: red  ;
+    }
+
+    .btn{
+      font-weight: 700;
+      margin-right: 10px;
+    }
     .Subject-title{
       display: flex;
       justify-content:space-between;
