@@ -22,77 +22,109 @@
           </template>
         </el-alert>
       </div>
-      <template>
+  <template>
       <el-table
       :data="items"
       style="width: 100%">
       <el-table-column
-        prop="title"
+        prop="id"
         label="编号"
+        width="220">
+      </el-table-column>
+      <el-table-column
+        prop="questionType"
+        label="题型"
         width="80">
       </el-table-column>
       <el-table-column
-        prop="title"
-        label="题型"
-        width="180">
-      </el-table-column>
-      <el-table-column
-        prop="visits"
+        width="220"
         label="题目编号">
+        <template slot-scope="{row}">
+          <p v-for="item in row.questionIDs" :key="item.id + Math.random()">
+            {{item.number}}
+          </p>
+        </template>
       </el-table-column>
       <el-table-column
-        prop="username"
         label="录入时间">
+        <template slot-scope="{row}">
+            {{ $dayjs(row.addTime).format('YYYY-MM-DD  HH:mm:ss')  }}
+          </template>
       </el-table-column>
+      <!-- progressOfAnswer -->
       <el-table-column
-        prop="createTime"
+       prop="totalSeconds"
         label="答题时间(s)">
       </el-table-column>
       <el-table-column
-        prop="state"
+        prop="accuracyRate"
         label="正确率(%)">
       </el-table-column>
       <el-table-column
-        prop="state"
+        prop="userName"
         label="录入人">
       </el-table-column>
        <el-table-column
         label="操作"
         width="180">
+        <el-button type="danger" icon="el-icon-delete" circle></el-button>
       <template>
-
         </template>
       </el-table-column>
     </el-table>
   </template>
+  <div class="block">
+    <!-- @size-change="handleSizeChange"
+    @current-change="handleCurrentChange" -->
+    <el-pagination
+      @size-change="handleSiz"
+      @current-change="Currentchange"
+      :page-size="query.pagesize"
+      :page-sizes="[5, 10, 20, 50]"
+      layout="prev, pager,next,sizes,total, jumper"
+      :total="table">
+    </el-pagination>
+  </div>
     </div>
   </div>
 </template>
 
 <script>
-import { list } from '../../api/hmmm/questions'
+import dayjs from 'dayjs'
+import { randoms } from '../../api/hmmm/questions'
 export default {
   data () {
     return {
-      table: '',
+      table: 1,
       left_input: '',
       items: [],
       query: {
-        page: '1',
-        pagesize: '10',
+        page: 1,
+        pagesize: 10,
         keyword: ''
       }
     }
   },
   created () {
     this.Subjectlist()
+    dayjs()
   },
   methods: {
     async Subjectlist () {
-      const { data } = await list(this.query)
+      const { data } = await randoms(this.query)
       this.items = data.items
       this.table = data.counts
-      console.log(data)
+      // console.log(data)
+    },
+    handleSiz (val) {
+      // console.log(val)
+      this.query.page = 1
+      this.query.pagesize = val
+      this.Subjectlist()
+    },
+    Currentchange (val) {
+      this.query.page = val
+      this.Subjectlist()
     }
   }
 }
