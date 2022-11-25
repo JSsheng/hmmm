@@ -69,10 +69,21 @@
         label="操作"
         width="280">
         <template  slot-scope="{row}">
-          <router-link to="/subjects/directorys"><el-button type="primary">学科分类</el-button></router-link>
-          <router-link to="/subjects/tags"><el-button type="primary">学科标签</el-button></router-link>
-            <el-button @click="SetList(row)" type="primary">修改</el-button >
-            <el-button type="primary">删除</el-button >
+          <router-link to="/subjects/directorys"><el-button type="text">学科分类</el-button></router-link>
+          <router-link to="/subjects/tags"><el-button type="text">学科标签</el-button></router-link>
+            <el-button @click="SetList(row)" type="text">修改</el-button >
+            <el-button @click="delLift(row)" type="text">删除</el-button >
+        <template>
+          <el-popconfirm
+            confirm-button-text='好的'
+            cancel-button-text='不用了'
+            icon="el-icon-info"
+            icon-color="red"
+            title="这是一段内容确定删除吗？"
+          >
+  <el-button slot="reference">删除</el-button>
+</el-popconfirm>
+</template>
         </template>
       </el-table-column>
     </el-table>
@@ -104,14 +115,14 @@
 <div>
   <span>是否显示</span>
   <el-switch
-    v-model="value"
+    v-model="curForm.isFrontDisplay"
     active-color="#13ce66"
     inactive-color="#ff4949">
   </el-switch>
 </div>
   <span slot="footer" class="dialog-footer">
     <el-button @click="dialogVisible = false">取 消</el-button>
-    <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+    <el-button type="primary" @click="addCurFrom">确 定</el-button>
   </span>
 </el-dialog>
 <!--!  修改弹框 -->
@@ -145,11 +156,11 @@
 
 <script>
 import dayjs from 'dayjs'
-import { list, update } from '../../api/hmmm/subjects'
+import { list, update, add, remove } from '../../api/hmmm/subjects'
 export default {
   data () {
     return {
-      value: '',
+      id: '',
       curForm: {
         isFrontDisplay: null,
         id: '',
@@ -188,7 +199,7 @@ export default {
     },
     // 清空input框
     DeleatInput () {
-      this.left_input = ''
+      this.query.subjectName = ''
     },
     SearchList () {
       this.Subjectlist()
@@ -211,6 +222,39 @@ export default {
       } catch (error) {
         this.$message.error('失败')
       }
+    },
+    async addCurFrom () {
+      try {
+        const addFrom = this.curForm
+        await add(addFrom)
+        this.$message.success('添加成功')
+        this.dialogVisible = false
+        this.curForm.subjectName = ''
+        this.Subjectlist()
+      } catch (error) {
+        this.$message.error('添加失败')
+      }
+    },
+    // 删除
+    async delLift (row) {
+      this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(async () => {
+        await remove({ id: row.id })
+        console.log('qqqqq')
+        this.Subjectlist()
+        this.$message({
+          type: 'success',
+          message: '删除成功'
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '取消删除'
+        })
+      })
     }
   }
 }
