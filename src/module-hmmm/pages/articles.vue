@@ -56,8 +56,10 @@
         label="录入人">
       </el-table-column>
       <el-table-column
-        prop="createTime"
         label="录入时间">
+        <template slot-scope="{row}">
+            {{ $dayjs(row.createTime).format('YYYY-MM-DD  HH:mm:ss')  }}
+        </template>
       </el-table-column>
       <el-table-column
         prop="state"
@@ -67,24 +69,52 @@
         label="操作"
         width="280">
         <template>
-          <span class="i">预览</span>
-          <span class="i">禁用</span>
-          <span class="i">修改</span>
-          <span class="i">删除</span>
+          <el-button @click="ISpreview" type="text" >预览</el-button>
+          <el-button type="text" >禁用</el-button >
+          <el-button type="text" >修改</el-button >
+          <el-button type="text" >删除</el-button >
         </template>
       </el-table-column>
-    </el-table>
+      </el-table>
+
+  <div class="block">
+    <!-- @size-change="handleSizeChange"
+    @current-change="handleCurrentChange" -->
+    <el-pagination
+      @size-change="handleSiz"
+      @current-change="Currentchange"
+      :page-size="query.pagesize"
+      :page-sizes="[1,5, 10, 20, 50]"
+      layout="prev, pager,next,sizes,total, jumper"
+      :total="table">
+    </el-pagination>
+  </div>
+
+  <el-dialog
+      title="编辑用户"
+      :visible.sync="editDialogVisible"
+      width="30%"
+      >
+      <span>这是一段信息</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="editDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="editDialogVisible = false">确 定</el-button>
+      </span>
+    </el-dialog>
   </template>
     </div>
   </div>
 </template>
 
 <script>
+import dayjs from 'dayjs'
 import { list } from '../../api/hmmm/articles'
 export default {
   data () {
     return {
-      table: '',
+      editDialogVisible: false,
+      Statevalue: '',
+      table: 0,
       left_input: '',
       state: [
         {
@@ -97,8 +127,8 @@ export default {
       ],
       items: [],
       query: {
-        page: '1',
-        pagesize: '10',
+        page: 1,
+        pagesize: 10,
         keyword: '',
         state: ''
       }
@@ -106,13 +136,26 @@ export default {
   },
   created () {
     this.Subjectlist()
+    dayjs()
   },
   methods: {
     async Subjectlist () {
       const { data } = await list(this.query)
       this.items = data.items
       this.table = data.counts
-      console.log(data)
+      // console.log(data)
+    },
+    handleSiz (val) {
+      this.query.page = 1
+      this.query.pagesize = val
+      this.Subjectlist()
+    },
+    Currentchange (val) {
+      this.query.page = val
+      this.Subjectlist()
+    },
+    ISpreview () {
+      this.editDialogVisible = true
     }
   }
 }

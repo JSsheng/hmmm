@@ -73,24 +73,22 @@
           <router-link to="/subjects/tags"><el-button type="text">学科标签</el-button></router-link>
             <el-button @click="SetList(row)" type="text">修改</el-button >
             <el-button @click="delLift(row)" type="text">删除</el-button >
-        <template>
-          <el-popconfirm
-            confirm-button-text='好的'
-            cancel-button-text='不用了'
-            icon="el-icon-info"
-            icon-color="red"
-            title="这是一段内容确定删除吗？"
-          >
-  <el-button slot="reference">删除</el-button>
-</el-popconfirm>
-</template>
+          <template>
+            <el-popconfirm
+                confirm-button-text='好的'
+                cancel-button-text='不用了'
+                icon="el-icon-info"
+                icon-color="red"
+                title="这是一段内容确定删除吗？"
+              >
+             <el-button slot="reference">删除</el-button>
+              </el-popconfirm>
+          </template>
         </template>
       </el-table-column>
     </el-table>
   </template>
   <div class="block">
-    <!-- @size-change="handleSizeChange"
-    @current-change="handleCurrentChange" -->
     <el-pagination
       @size-change="handleSiz"
       @current-change="Currentchange"
@@ -243,7 +241,7 @@ export default {
         type: 'warning'
       }).then(async () => {
         await remove({ id: row.id })
-        console.log('qqqqq')
+        // console.log('qqqqq')
         this.Subjectlist()
         this.$message({
           type: 'success',

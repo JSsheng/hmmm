@@ -54,11 +54,35 @@
       <el-table-column
         label="操作">
         <template>
-          <el-button type="primary" icon="el-icon-edit" circle></el-button>
+          <el-button @click="IsdialogVisible" type="primary" icon="el-icon-edit" circle></el-button>
+
         </template>
       </el-table-column>
-    </el-table>
+      </el-table>
      </template>
+    <div class="block">
+    <!-- @size-change="handleSizeChange"
+    @current-change="handleCurrentChange" -->
+    <el-pagination
+      @size-change="handleSiz"
+      @current-change="Currentchange"
+      :page-size="query.pagesize"
+      :page-sizes="[1,5, 10, 20, 50]"
+      layout="prev, pager,next,sizes,total, jumper"
+      :total="table">
+    </el-pagination>
+    </div>
+    <el-dialog
+      title="编辑用户"
+      :visible.sync="editDialogVisible"
+      width="30%"
+      >
+      <span>这是一段信息</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="editDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="editDialogVisible = false">确 定</el-button>
+      </span>
+    </el-dialog>
     </div>
   </div>
 </template>
@@ -68,15 +92,16 @@ import { list } from '../../api/base/users'
 export default {
   data () {
     return {
+      editDialogVisible: false,
       left_input: '',
       tableData: [],
       query: {
-        page: '1',
-        pagesize: '10',
+        page: 1,
+        pagesize: 10,
         keyword: '',
         disabled: ''
       },
-      table: ''
+      table: 0
     }
   },
   created () {
@@ -87,7 +112,19 @@ export default {
       const { data } = await list(this.query)
       this.tableData = data.list
       this.table = data.counts
-      console.log(data)
+      // console.log(data)
+    },
+    handleSiz (val) {
+      this.query.page = 1
+      this.query.pagesize = val
+      this.GetUsersList()
+    },
+    Currentchange (val) {
+      this.query.page = val
+      this.GetUsersList()
+    },
+    IsdialogVisible () {
+      this.editDialogVisible = true
     }
   }
 }

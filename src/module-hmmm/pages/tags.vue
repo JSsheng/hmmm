@@ -136,8 +136,6 @@
     </el-table>
   </template>
   <div class="block">
-    <!-- @size-change="handleSizeChange"
-    @current-change="handleCurrentChange" -->
     <el-pagination
       @size-change="handleSiz"
       @current-change="Currentchange"
